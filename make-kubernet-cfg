@@ -1,0 +1,82 @@
+#!/usr/bin/env python2
+import argparse
+import sys
+from string import Template
+
+################
+# GET TEMPLATE #
+################
+
+def get_template(nappargs = 0):
+
+	# Template, first part
+	template = """apiVersion: extensions/v1beta1
+kind: Job
+metadata:
+  name: ipo-run-test2
+spec:
+  selector:
+    matchLabels:
+      app: $appname
+  template:
+    metadata:
+      name: $appname
+      labels:
+        app: $appname
+    spec:
+      containers:
+      - name: $contname
+        image: $cimgrepos/$cimgowner/$cimgname:$cimgver
+"""
+	# Set arguments
+	if nappargs > 0:
+		template += "        args:\n"
+		for i in range(nappargs):
+			template +='          - "$APPARG' + str(i) + '"' + "\n"
+
+	# Template, second part
+	template += """        volumeMounts:
+               - name: glusterfsvol
+                 mountPath: /mnt/glusterfs
+      restartPolicy: Never
+      volumes:
+         - name: glusterfsvol
+           glusterfs:
+               endpoints: glusterfs-cluster
+               path: scratch
+               readOnly: false
+"""
+	return Template(template)
+
+##############
+# PARSE ARGS #
+##############
+
+def parse_args():
+
+	# Parse arguments
+	parser = argparse.ArgumentParser(description='Some description.')
+	parser.add_argument('-n', '--appname', help='Application name', dest='appname', required=True)
+	parser.add_argument('-c', '--contname', help='Container name', dest='contname', required=True)
+	parser.add_argument('--cimgrepos', help='Container image repository', dest='cimgrepos', required=True)
+	parser.add_argument('--cimgowner', help='Container image owner', dest='cimgowner', required=True)
+	parser.add_argument('--cimgname', help='Container image name', dest='cimgname', required=True)
+	parser.add_argument('--cimgver', help='Container image version', dest='cimgver', required=True)
+	parser.add_argument('appargs', nargs=argparse.REMAINDER, help='Application arguments')
+	args = parser.parse_args()
+	return args
+
+########
+# MAIN #
+########
+
+args = parse_args()
+appargs = args.appargs
+appargs.remove('--')
+params = vars(args)
+del params['appargs']
+i = 0
+for arg in appargs:
+	params["APPARG" + str(i)] = arg
+	i += 1
+print(get_template(len(appargs)).substitute(params))
