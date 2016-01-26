@@ -1,0 +1,13 @@
+#!/usr/bin/env python2
+
+import os
+
+########
+# MAIN #
+########
+
+os.system('../make-kubernetes-cfg -j MYJOBNAME -n MYAPP -c MYCONT --cimgrepos MYIMGREPOS --cimgowner MYIMGOWNER --cimgname MYIMGNAME --cimgver MYIMGVER --volpath MYVOLPATH --volname MYVOLNAME --glusterfspath MYGLUSTERFSPATH -- --arg1 --arg2 --arg3 -z BLABLA')
+# TODO fail on os.system() failure
+
+# TODO test failure
+#os.system('../make-kubernetes-cfg')

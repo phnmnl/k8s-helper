@@ -13,7 +13,7 @@ def get_template(nappargs = 0):
 	template = """apiVersion: extensions/v1beta1
 kind: Job
 metadata:
-  name: ipo-run-test2
+  name: $jobname
 spec:
   selector:
     matchLabels:
@@ -36,16 +36,15 @@ spec:
 
 	# Template, second part
 	template += """        volumeMounts:
-               - name: glusterfsvol
-                 mountPath: /mnt/glusterfs
+               - name: $volname
+                 mountPath: $volpath
       restartPolicy: Never
       volumes:
-         - name: glusterfsvol
+         - name: $volname
            glusterfs:
                endpoints: glusterfs-cluster
-               path: scratch
-               readOnly: false
-"""
+               path: $glusterfspath
+               readOnly: false"""
 	return Template(template)
 
 ##############
@@ -56,12 +55,16 @@ def parse_args():
 
 	# Parse arguments
 	parser = argparse.ArgumentParser(description='Some description.')
+	parser.add_argument('-j', '--jobname', help='Job name', dest='jobname', required=True)
 	parser.add_argument('-n', '--appname', help='Application name', dest='appname', required=True)
 	parser.add_argument('-c', '--contname', help='Container name', dest='contname', required=True)
 	parser.add_argument('--cimgrepos', help='Container image repository', dest='cimgrepos', required=True)
 	parser.add_argument('--cimgowner', help='Container image owner', dest='cimgowner', required=True)
 	parser.add_argument('--cimgname', help='Container image name', dest='cimgname', required=True)
 	parser.add_argument('--cimgver', help='Container image version', dest='cimgver', required=True)
+	parser.add_argument('--volpath', help='Volume path', dest='volpath', required=True)
+	parser.add_argument('--volname', help='Volume name', dest='volname', required=True)
+	parser.add_argument('--glusterfspath', help='Gluster fs path', dest='glusterfspath', required=True)
 	parser.add_argument('appargs', nargs=argparse.REMAINDER, help='Application arguments')
 	args = parser.parse_args()
 	return args
