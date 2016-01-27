@@ -7,10 +7,10 @@ from string import Template
 # GET TEMPLATE #
 ################
 
-def get_template(nappargs = 0):
 
-	# Template, first part
-	template = """apiVersion: extensions/v1beta1
+def get_template(nappargs = 0):
+    # Template, first part
+    template = """apiVersion: extensions/v1beta1
 kind: Job
 metadata:
   name: $jobname
@@ -28,14 +28,14 @@ spec:
       - name: $contname
         image: $cimgrepos/$cimgowner/$cimgname:$cimgver
 """
-	# Set arguments
-	if nappargs > 0:
-		template += "        args:\n"
-		for i in range(nappargs):
-			template +='          - "$APPARG' + str(i) + '"' + "\n"
+    # Set arguments
+    if nappargs > 0:
+        template += "        args:\n"
+        for i in range(nappargs):
+            template += '          - "$APPARG' + str(i) + '"' + "\n"
 
-	# Template, second part
-	template += """        volumeMounts:
+    # Template, second part
+    template += """        volumeMounts:
                - name: $volname
                  mountPath: $volpath
       restartPolicy: Never
@@ -45,7 +45,7 @@ spec:
                endpoints: glusterfs-cluster
                path: $glusterfspath
                readOnly: false"""
-	return Template(template)
+    return Template(template)
 
 ##############
 # PARSE ARGS #
@@ -53,21 +53,22 @@ spec:
 
 def parse_args():
 
-	# Parse arguments
-	parser = argparse.ArgumentParser(description='Some description.')
-	parser.add_argument('-j', '--jobname', help='Job name', dest='jobname', required=True)
-	parser.add_argument('-n', '--appname', help='Application name', dest='appname', required=True)
-	parser.add_argument('-c', '--contname', help='Container name', dest='contname', required=True)
-	parser.add_argument('--cimgrepos', help='Container image repository', dest='cimgrepos', required=True)
-	parser.add_argument('--cimgowner', help='Container image owner', dest='cimgowner', required=True)
-	parser.add_argument('--cimgname', help='Container image name', dest='cimgname', required=True)
-	parser.add_argument('--cimgver', help='Container image version', dest='cimgver', required=True)
-	parser.add_argument('--volpath', help='Volume path', dest='volpath', required=True)
-	parser.add_argument('--volname', help='Volume name', dest='volname', required=True)
-	parser.add_argument('--glusterfspath', help='Gluster fs path', dest='glusterfspath', required=True)
-	parser.add_argument('appargs', nargs=argparse.REMAINDER, help='Application arguments')
-	args = parser.parse_args()
-	return args
+    # Parse arguments
+    parser = argparse.ArgumentParser(description='Some description.')
+    parser.add_argument('-j', '--jobname', help='Job name', dest='jobname', required=True)
+    parser.add_argument('-n', '--appname', help='Application name', dest='appname', required=True)
+    parser.add_argument('-c', '--contname', help='Container name', dest='contname', required=True)
+    parser.add_argument('--cimgrepos', help='Container image repository', dest='cimgrepos', required=True)
+    parser.add_argument('--cimgowner', help='Container image owner', dest='cimgowner', required=True)
+    parser.add_argument('--cimgname', help='Container image name', dest='cimgname', required=True)
+    parser.add_argument('--cimgver', help='Container image version', dest='cimgver', required=True)
+    parser.add_argument('--volpath', help='Volume path', dest='volpath', required=True)
+    parser.add_argument('--volname', help='Volume name', dest='volname', required=True)
+    parser.add_argument('--glusterfspath', help='Gluster fs path', dest='glusterfspath', required=True)
+    parser.add_argument('appargs', nargs=argparse.REMAINDER, help='Application arguments')
+    args = parser.parse_args()
+    return args
+
 
 ########
 # MAIN #
@@ -80,6 +81,6 @@ params = vars(args)
 del params['appargs']
 i = 0
 for arg in appargs:
-	params["APPARG" + str(i)] = arg
-	i += 1
+    params["APPARG" + str(i)] = arg
+    i += 1
 print(get_template(len(appargs)).substitute(params))
