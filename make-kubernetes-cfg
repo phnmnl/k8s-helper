@@ -70,7 +70,8 @@ spec:
 def parse_args():
 
     # Parse arguments
-    parser = argparse.ArgumentParser(description='Some description.')
+    parser = argparse.ArgumentParser(description='CLI to send jobs to a K8s cluster through a working kubectl in the path.'
+                                                 'This utility will wait until jobs finish (or fail) to exit.')
     parser.add_argument('-j', '--jobname', help='Job name', dest='jobname', required=True)
     parser.add_argument('-n', '--appname', help='Application name', dest='appname', required=True)
     parser.add_argument('-c', '--contname', help='Container name', dest='contname', required=True)
