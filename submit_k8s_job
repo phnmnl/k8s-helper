@@ -52,7 +52,7 @@ spec:
                  mountPath: $volpath
 """
     template += """      restartPolicy: Never
-      """
+"""
 
     if vol:
         template += """      volumes:
