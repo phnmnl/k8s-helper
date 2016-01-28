@@ -16,9 +16,9 @@ class K8SConnection(object):
         :return: the object created
         """
         self.path = path
-        output,error = Popen(["kubectl", "create", "-f", path], stdout=PIPE, stderr=PIPE).communicate()
+        Popen(["kubectl", "create", "-f", self.path])
 
-    def describe(self):
+    def describe(self,out_fh=None):
         """
         Describes the object represented within the cluster by the provided yaml/json file
         given in the path. Currently only supports Jobs.
@@ -29,8 +29,13 @@ class K8SConnection(object):
         type = gparser.get_type()
         if type == "Job":
             output, error = Popen(["kubectl", "describe", "-f", self.path], stdout=PIPE, stderr=PIPE).communicate()
+            if out_fh is not None:
+                out_fh.write(output)
             return K8sJobParser.parse(output)
         return None
+
+    def kill_job(self):
+        output, error = Popen(["kubectl", "delete", "-f", self.path], stdout=PIPE, stderr=PIPE).communicate()
 
     @staticmethod
     def describe_pod(pod_name):
