@@ -14,10 +14,16 @@ class K8sDefinitionParser(object):
         self.__parse()
 
     def __parse(self):
-        self.data = load(open(self.path))
+        fh = open(self.path)
+        self.data = load(fh)
+        fh.close()
+
 
     def get_type(self):
         return self.data['kind']
+
+    def get_num_pods(self):
+        return len(self.data['spec']['template']['spec']['containers'])
 
 
 class K8sJobParser(object):
