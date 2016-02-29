@@ -1,9 +1,11 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 import argparse
 import os
 import time
 from tempfile import mkdtemp
 from string import Template
+
 
 ################
 # GET TEMPLATE #
@@ -144,25 +146,31 @@ expected_pods = defParser.get_num_pods()
 print("Pods in the job: "+str(expected_pods))
 
 desc_job = open(jobYaml.replace(".yaml",".k8s.desc.log"), 'w')
-while job.pods_running > 0:
-    print("")
-    print("Pods running   : "+str(job.pods_running))
-    print("Pods failed    : "+str(job.pods_failed))
-    print("Pods succeeded : "+str(job.pods_succeeded))
 
-    # this part could be optionall, letting the cluster insist until
-    # it manages to run the job succefully
+print("")
+print("Pods running   : "+str(job.pods_running))
+print("Pods failed    : "+str(job.pods_failed))
+print("Pods succeeded : "+str(job.pods_succeeded))
+
+while job.pods_running > 0:
+    # this part could be optional, letting the cluster insist until
+    # it manages to run the job succesfully
     if job.pods_failed > 0:
         print("Detected failing pods... killing the job")
         # we should write logs at this point
         conn.describe(out_fh=desc_job)
-        conn.kill_job(jobYaml)
+        conn.kill_job()
         desc_job.close()
         exit(0)
 
     time.sleep(5)
-    print("Waiting 5 seconds")
+    print(".", end="")
     job = conn.describe()
+
+print("")
+print("Pods running   : "+str(job.pods_running))
+print("Pods failed    : "+str(job.pods_failed))
+print("Pods succeeded : "+str(job.pods_succeeded))
 
 print("All jobs finished running")
 conn.describe(out_fh=desc_job)
