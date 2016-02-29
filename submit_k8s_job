@@ -3,8 +3,9 @@ from __future__ import print_function
 import argparse
 import os
 import time
+import random
 from tempfile import mkdtemp
-from string import Template
+from string import Template, ascii_lowercase, digits
 
 
 ################
@@ -109,6 +110,9 @@ def process_image_name(params):
     del params['cimgname']
     return params
 
+def id_generator(size=6, chars=ascii_lowercase + digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
 ########
 # MAIN #
 ########
@@ -124,6 +128,7 @@ for arg in appargs:
     params["APPARG" + str(i)] = arg
     i += 1
 params = process_image_name(params)
+params['jobname'] += "-"+id_generator()
 
 jobYaml = params['workdir']+os.sep+params['jobname']+".yaml"
 jy_fh = open(jobYaml, 'w')
