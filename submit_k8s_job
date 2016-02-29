@@ -175,6 +175,7 @@ print("Pods succeeded : "+str(job.pods_succeeded))
 print("All jobs finished running")
 conn.describe(out_fh=desc_job)
 desc_job.close()
+conn.delete_job()
 
 
 

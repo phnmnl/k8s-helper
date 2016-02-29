@@ -42,3 +42,6 @@ class K8SConnection(object):
         output, error = Popen(["kubectl", "describe", "pod/"+pod_name], stdout=PIPE, stderr=PIPE).communicate()
         return K8sPodParser.parse(output)
 
+    def delete_job(self):
+        self.kill_job()
+
