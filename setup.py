@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='k8s-helper',
-    version='0.1.0',
+    version='0.1.1',
     packages=['k8s'],
     url='https://github.com/phnmnl/k8s-helper',
     license='Apache 2.0',
